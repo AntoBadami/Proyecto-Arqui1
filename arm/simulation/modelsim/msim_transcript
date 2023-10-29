@@ -1,0 +1,54 @@
+# Reading C:/intelFPGA_lite/19.1/modelsim_ase/tcl/vsim/pref.tcl
+# do arm_run_msim_rtl_verilog.do
+# if {[file exists rtl_work]} {
+# 	vdel -lib rtl_work -all
+# }
+# vlib rtl_work
+# vmap work rtl_work
+# Model Technology ModelSim - Intel FPGA Edition vmap 10.5b Lib Mapping Utility 2016.10 Oct  5 2016
+# vmap work rtl_work 
+# Copying C:/intelFPGA_lite/19.1/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# 
+# vlog -sv -work work +incdir+C:/arqui1/arm {C:/arqui1/arm/arm.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 09:00:44 on Oct 27,2023
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/arqui1/arm" C:/arqui1/arm/arm.sv 
+# -- Compiling module top
+# -- Compiling module dmem
+# -- Compiling module imem
+# -- Compiling module arm
+# -- Compiling module controller
+# -- Compiling module decode
+# -- Compiling module condlogic
+# -- Compiling module condcheck
+# -- Compiling module datapath
+# -- Compiling module regfile
+# -- Compiling module extend
+# -- Compiling module alu
+# -- Compiling module adder
+# -- Compiling module flopenr
+# -- Compiling module flopr
+# -- Compiling module mux2
+# -- Compiling module cmp2
+# -- Compiling module port
+# 
+# Top level modules:
+# 	top
+# End time: 09:00:44 on Oct 27,2023, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+vsim rtl_work.imem
+# vsim rtl_work.imem 
+# Start time: 09:00:59 on Oct 27,2023
+# Loading sv_std.std
+# Loading rtl_work.imem
+add wave -position end  sim:/imem/rd
+add wave -position end  sim:/imem/a
+add wave -position end  sim:/imem/RAM
+run
+# ** Warning: (vsim-7) Failed to open readmem file "mem_io.dat" in read mode.
+# No such file or directory. (errno = ENOENT)    : C:/arqui1/arm/arm.sv(49)
+#    Time: 0 ps  Iteration: 0  Instance: /imem
+# End time: 09:03:12 on Oct 27,2023, Elapsed time: 0:02:13
+# Errors: 0, Warnings: 1
