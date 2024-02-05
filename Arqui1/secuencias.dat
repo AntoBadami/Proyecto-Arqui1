@@ -1,0 +1,197 @@
+SUB R0, R15, R15		Seteo R0, en 0
+LDR R9, [R0, #0x0]		Guardamos la contraseña que esta en DMEN
+ADD R1, R0, #3			Creo un contador de 3 intentos en el registro 1
+ADD R2, R0, #1			Cargo en 1 R2 para duplicar
+ADD R3, R0, #0x1		Uso R3, comenzando en el primero led(Intento 1)
+STR R3, [R0, #0x800]		Muestro en pantalla LEDS
+LDR R4, [R0, #0x800]		Lectura de boton
+ANDS R4, R4, #0x80		Comparo si se preciono boton
+BNE #24				Vuelve a la lectura del boton(si aprieto, apaga BNE)
+LDR R5, [R0, #0xC]		Cargo en R5, DELAY DE BOTON
+SUBS R5, R5, #1			Resto delay
+BNE #40				Vuelvo al subs para perder tiempo(cuando se termine, apaga BNE)
+LDR R6, [R0, 0x800]		LEO LLAVES EN REGISTRO 6
+ANDS R6, R6, R9			COMPARO LLAVES CON EL REGISTRO R9
+BNE #64				Si no son iguales, salto a aumento de intento
+BEQ #84				Si son iguales salto a menu
+ADD R2, R2, R2			Duplico R2(comenzo en 1)
+ADD R3, R3, R2			Sumo en R3, el duplicado de R2(Muestro los siguientes intentos en los leds)
+SUBS R1, R1, #1			Resto 1 intento del contador
+BNE #20				Cuando se acaban los intentos apaga este BNE
+B #780				Se acabaron los intentos, se debe apagar el sistema(salto a apagar leds).
+ADD R8, R0, #0xFF		Cargo R8, con FF(TODOS LOS LEDS PRENDIDOS)
+STR R8, [R0,#0x800]		MUESTRO TODOS LOS LEDS PRENDIDOS INDICANDO Q ESTOY EN MENU
+LDR R9, [R0, #0xC]		Cargo Delay de boton
+SUBS R9, R9, #1			Resto delay
+BNE #96				Espero a terminar de restar delay
+LDR R1, [R0, #0xC]		CARGO EN REGISTRO 1, DELAY DE BOTON(TIEMPO DE ESPERA ANTES DE IR A LA SECUENCIA)
+ADD R2, R0, #0x81		Cargo en registro 2, el 81(Significa PRIMER Y ULTIMO LED PRENDIDO)10000001
+STR R2, [R0, #0x800]		Muestro la opcion 1(10000001)
+LDR R3, [R0, #0x800]		Hago lectura de boton
+ANDS R3, R3, #0x80		Comparo si se preciono o no el boton
+BNE #132			Si no se aprieta boton, salto al subs
+BEQ #200			Si aprieto Boton, salto a opcion 2
+SUBS R1, R1, #1			Resto el delay de boton
+BNE #116			Salto a la lectura del boton de nuevo
+ADD R7, R0, #0			Empieza secuencia de lectura por tabla
+ADD R2, R0, #16			Cargo R2, con la cantidad de lineas que tiene la tabla
+LDR R4, [R7, #0x10]		Leo la primera posicion donde comienza la lectura de la tabla de la carrerita(donde arranca la tabla)
+STR R4, [R0, #0x800]		Muestro lo que cargo R4(prende los leds)
+LDR R3, [R0,#0x4]		Cargo en R3, delay utilizado para le secuencia(esta cargado en la 0x4)
+SUBS R3, R3, #1			Decremento delay
+BNE #160			Espero a terminar de restar delay
+ADD R7, R7, #4			Aumento en 4 el registro R7 para leer la siguiente linea
+LDR R5, [R0, #0x800]		Lectura de boton
+ANDS R5, R5, #0x80		Compara si aprete boton o no
+BNE #188			Si no aprieto salto al subs
+BEQ #84				Si aprieto salto AL MENU
+SUBS R2, R2, #1			Resta R2, en 1, R2, es la cantida de lineas que tiene mi tabla
+BNE #148			SALTA AL LDR R4,[R7, 0X800], para leer la primera posicion mas R7
+B #140				Reinicio hasta la carrerita(ADD R7, R0, #0)
+ADD R8, R0, #0x83		CARGO EN R8, 83(10000011)Es la opcion 2
+STR R8, [R0,#0x800]		Muestra los leds
+LDR R9, [R0, #0xC]		Cargo en r9, un delay
+SUBS R9, R9, #1			Decremento delay en 1
+BNE #212			Espero a terminar de restar delay
+LDR R1, [R0, #0xC]		Cargro en R1, el delay de espera del boton
+ADD R2, R0, #0x83		Cargo en R2, 83(opcion 2)
+STR R2, [R0, #0x800]		Muestro opcion 2
+LDR R3, [R0, #0x800]		Lectura de boton
+ANDS R3, R3, #0x80		Comparo si aprete boton o no
+BNE #248			Si NO apriete boton salto al subs
+BEQ #404			Si aprete boton, salto a opcion 3
+SUBS R1, R1, #1			Decremento delay de espera de boton
+BNE #232			Salta a lectura de boton
+ADD R9, R0, #0			CARGO EN R9, UN 0(LO USAMOS PARA DELAY)
+ADD R1, R0, #0			Cargo en R1, un 0(Contador de divisiones)
+ADD R5, R0, #7			Cargo en R5, un 7(Cantida de veces que voy a dividir)
+ADD R2, R0, #0x80		Cargo en R2, el 0x80(Comienzo por el ultimo led)
+STR R2,[R0, #0x800]		Muestro el ultimo led(0x800+0x80)
+ADD R3, R0, #6			Cargo en el registro R3, un 6(Cantidad de veces que duplico un registro)
+ADD R4, R0, #1			CARGO EN EL REGISTRO R4, UN 1 (REGISTRO QUE VOY A DUPLICAR)
+SUBS R3, R3, R1			RESTO R3, CON R1 
+BEQ #304			SI LO DE ARRIBA ES 0 SE ACTIBA EL SALTO, de lo contrario no
+SUBS R3, R3, #1			DECREMENTA EN 1, R3(VALE 6)
+ADD R4, R4, R4			DUPLICA R4, 6 VECES
+BNE #292			SALTAMOS AL SUBS R3, R3, #1
+ADD R1, R1, #1			SUMO EN 1 EL CONTADOR DE DIVISION
+SUB R2, R2, R4			RESTO LO QUE ESTA EN R2(0x80)con lo q esta en R4(0x40)seria la division
+LDR R9, [R0, #0x4]		Lectura de delay de secuencia
+SUBS R9, R9, #1			resto delay en 1
+BNE #316			Espero a terminar de restar delay
+LDR R8, [R0, #0x800]		HAGO LECTURA DE BOTON
+ANDS R8, R8, #0x80		COMPARO SI APRETE BOTON O NO
+BNE #340			SI NO APRIETO NADA, SIGO AL SUBS
+BEQ #84				SI APRIETO BOTON VUELVO AL MENU 1
+SUBS R5, R5, #1			ESTE SUBS SE ACTIVA 7 VECES(CANTIDAD DE VECES QUE DECIDIMOS DIVIDIR)
+BNE #272			SALTA A MOSTRAR LOS LEDS
+STR R2, [R0, #0x800]		MUESTRO LA PRIMERA LUZ
+ADD R5, R0, #7			CARGO EN R5, UN 7(Cantida de veces que voy a MULTIPLICAR)
+ADD R2, R2, R2			DUPLICO R2(COMENZANDO EN 1)
+LDR R9, [R0, #0x4]		Lectura de delay de secuencia
+SUBS R9, R9, #1			Decremento delay en 1
+BNE #364			Salto al subs del delay
+STR R2, [R0,#0x800]		Muestro R2
+LDR R8, [R0, #0x800]		Hago leCTURA DE BOTON
+ANDS R8, R8, #0x80		Comparo si aprete o no el boton
+BNE #392			Si NO aprieto Boton salto al subs
+BEQ #84				Si aprieto BOTON vuelvo al menu 1
+SUBS R5, R5, #1			Decremento cantidad de veces que quiero multiplicar en 1
+BNE #356			Salto a duplicar R2
+B #256				Reinicia toda la secuencia de nuevo
+ADD R8, R0, #0x87		cargo OPCION 3 (10000111)
+STR R8, [R0,#0x800]		Muestro opcion 3
+LDR R9, [R0, #0xC]		Lectura de delay
+SUBS R9, R9, #1			Resto delay
+BNE #416			Espero a terminar de restar delay
+LDR R1, [R0, #0xC]		Carga delay de espera de boton
+ADD R2, R0, #0x87		Muestra de nuevo la opcion 3
+STR R2, [R0, #0x800]		Muestra leds
+LDR R3, [R0, #0x800]		Lectura de boton
+ANDS R3, R3, #0x80		Comparo si aprete o no boton
+BNE #452			Si NO aprete Salto al subs
+BEQ #520			Si aprete salto a la opcion 4
+SUBS R1, R1, #1			Resta en 1 el delay de espera del boton
+BNE #436			Salta a lectura de boton
+ADD R7, R0, #0			CARGO EN R7 UN 0
+ADD R2, R0, #32			Cargo en R2, un 32, Cantidad de lineas que tiene la tabla
+LDR R4, [R7, #0x50]		Comienzo leyendo desde la linea 0x50
+STR R4, [R0, #0x800]		Muestro esa linea
+LDR R3, [R0,#0x8]		Cargo delay de secuencia
+SUBS R3, R3, #1			Decremento delay en 1
+BNE #480			Salto al decremento
+ADD R7, R7, #4			Aumento en 4 R7
+LDR R5, [R0, #0x800]		Lectura de boton
+ANDS R5, R5, #0x80		Comparo si aprete o no boton
+BNE#508				Si No aprete salto al subs
+BEQ #84				Si aprete vuelvo a Menu
+SUBS R2, R2, #1			Decremento R2(Cantidad de lineas a leer)
+BNE #468			Salto a STR(Muestro Linea inicial + R7)
+B #460				Reinicio Secuencia
+ADD R8, R0, #0x8F		cargo OPCION 4 (10001111)
+STR R8, [R0,#0x800]		Muestro opcion 4
+LDR R9, [R0, #0xC]		Lectura de delay
+SUBS R9, R9, #1			Resto delay
+BNE #532			Espero a terminar de restar delay
+LDR R1, [R0, #0xC]		Carga delay de espera de boton
+ADD R2, R0, #0x8F		Muestra de nuevo la opcion 4
+STR R2, [R0, #0x800]		Muestra leds
+LDR R3, [R0, #0x800]		Lectura de boton
+ANDS R3, R3, #0x80		Comparo si aprete o no boton
+BNE #568			Si NO aprete Salto al subs
+BEQ #84				Si aprete salto a la opcion 1
+SUBS R1, R1, #1			Resta en 1 el delay de espera del boton
+BNE #552			Salta a lectura de boton
+ADD R1, R0, #0			Cargo en R1, un 0(Contador de divisiones)
+ADD R2, R0, #0x1		Cargo en R2, un 0x1(Comienzo en led 1)
+ADD R3, R0, #0x80		Cargo en R3, 0x80(ULTIMO LED)
+ADD R4, R0, #0			CARGO EN R4 UN 0
+ADD R5, R0, #0			CARGO EN R5 UN 0
+ADD R6, R0, #7			Cargo en R6 un 7, Cantidad de veces que voy mostrar leds
+ADD R8, R0, #8			Cargo en R8, un 8(Veces que voy a duplicar un registro)
+SUB R8, R8, R5			Decremento R8 en R5
+ADD R4, R4, R2			Le sumo a R4 lo que esta en R2
+STR R4, [R0, #0x800]		Muestro R4
+ADD R4, R4, R2			Le sumo a R4 lo que esta en R2
+ADD R2, R2, R2			Duplico R2
+LDR R9, [R0, #0x8]		Cargo delay de secuencia
+SUBS R9, R9, #1			Decremento delay en 1
+BNE #628			Salto al decremento
+SUBS R8, R8, #1			Decremento R8, en 1
+BNE #612			Salto a Mostrar 
+ADD R5, R5, #1			Aumento R5 en 1
+ADD R2, R0, #0x1		Recargo R2 con 0x1
+ADD R4, R0, R3			Recargo R4, con lo que quedo en R3(0x80)
+ADD R10, R0, #6			Cargo R10 un 6(Veces q duplico un registro)
+ADD R11, R0, #1			Cargo 1 en R11, EL QUE VAMOS A DUPLICAR
+SUBS R10, R10, R1		RESTO R10 CON R1
+BEQ #684			Salto a Aumentar contador de divisiones
+SUBS R10, R10, #1		Veces que duplico R11
+ADD R11, R11, R11		Duplico R11
+BNE #672			Salto A Subs r10
+ADD R1, R1, #1			Aumento r1 en 1
+ADD R3, R3, R11			Cargo en r3, lo que esta en r3 mas r11
+LDR R8, [R0, #0x800]		Lectura de boton
+ANDS R8, R8, #0x80		Comparo si apreto o no
+BNE #708			Si No Aprieto salto al subs
+BEQ #84				Si aprieto vuelvo a menu 1
+SUBS R6, R6, #1			Decremento Cantidad de veces q muestro leds
+BNE #600			Salto a mostrar recargar r8
+ADD R1, R0, #8			Cargo en r1 un 8(cantidad de veces q vamos a descargar)
+ADD R2, R0, #0x1		Cargo un 0x1 en r2
+ADD R3, R0, #0xFF		Cargo en R3, un 0xFF(todos los leds prendidos)
+STR R3, [R0, #0x800]		Muestro en pantalla todos los leds prendidos
+SUB R3, R3, R2			Decremento R3 en R2
+ADD R2, R2, R2			Duplico R2
+LDR R9,[R0,#0x8]		Lectura de delay de secuencia
+SUBS R9, R9, #1			Decremento delay en 1
+BNE #744			Espero a terminar de restar delay
+LDR R8, [R0, #0x800]		Lectura de boton
+ANDS R8, R8, #0x80		Comparo si aprete o no el boton
+BNE #768			Si No aprete boton salto al subs
+BEQ #84				Si Aprieto Boton salto al menu 1
+SUBS R1, R1, #1			Decremento r1 en 1
+BNE #728			Salto A Mostrar STR
+B #576				Reinicia toda la secuencia de nuevo
+ADD R1, R0, #0x0		
+STR R1, [R0,#0x800]		
